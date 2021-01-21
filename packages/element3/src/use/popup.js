@@ -31,6 +31,9 @@ const popupProps = {
     default: true
   },
   modalClass: {},
+  /**
+   * 遮罩层是否插入至 body 元素上，若为 false，则遮罩层会插入至 Dialog 的父元素上
+   */
   modalAppendToBody: {
     type: Boolean,
     default: false
@@ -57,6 +60,9 @@ function usePopup(props) {
   const bodyPaddingRight = ref(null)
   const computedBodyPaddingRight = ref(0)
   const withoutHiddenClass = ref(true)
+  /**
+   * 当前组件是否已经渲染完毕
+   */
   const rendered = ref(false)
   const instance = getCurrentInstance()
   let _popupId = 0
@@ -70,12 +76,16 @@ function usePopup(props) {
     }
 
     const props = merge({}, instance.proxy, options)
-
+    /**
+     * 如果设置关闭时间的话
+     */
     if (_closeTimer) {
       clearTimeout(_closeTimer)
       _closeTimer = 0
     }
     clearTimeout(_openTimer)
+    // http://localhost:8088/#/component/tooltip
+    // tooltip 组件有使用 openDelay 打开延迟属性
     const delay = Number(props.openDelay) || 0
     if (delay > 0) {
       _openTimer = setTimeout(() => {
@@ -87,6 +97,7 @@ function usePopup(props) {
     }
   }
   const doOpen = (props) => {
+    console.log('doOpen props ->', props)
     if (instance.proxy.$isServer) return
     if (_opening) return
     if (opened.value) return
@@ -98,11 +109,18 @@ function usePopup(props) {
     if (zIndex) {
       PopupManager.zIndex = zIndex.value
     }
+    /**
+     * model 是否需要遮罩层
+     */
     if (modal) {
       if (_closing) {
         PopupManager.closeModal(_popupId)
         _closing = false
       }
+      /**
+       * PopupManager 弹窗管理器
+       * openModal 打开弹窗
+       */
       PopupManager.openModal(
         _popupId,
         PopupManager.nextZIndex(),

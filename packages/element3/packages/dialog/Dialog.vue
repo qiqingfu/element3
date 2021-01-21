@@ -138,6 +138,10 @@ export default {
     const { broadcast } = useEmitter()
     const style = computed(() => {
       const style = {}
+      /**
+       * 在非全屏 fullscreen 为 false 的情况下
+       * 设置 top 或 width 时, 应应用 style 样式
+       */
       if (!(fullscreen && fullscreen.value)) {
         style.marginTop = top.value
         if (width && width.value) {
@@ -157,6 +161,11 @@ export default {
         hide()
       }
     }
+    /**
+     * 组件内部提供的函数, 通过 beforeClose 钩子传递给使用者
+     * 当使用者调用 hide() 或 done() 时, 则关闭, 维护组件内部的状态
+     * @param cancel
+     */
     const hide = (cancel) => {
       if (cancel !== false) {
         emit('update:visible', false)
@@ -201,6 +210,9 @@ export default {
         rendered.value = true
         open()
         if (appendToBody.value) {
+          /**
+           * Dialog 自身是否插入至 body 元素上。嵌套的 Dialog 必须指定该属性并赋值为 true
+           */
           document.body.appendChild(instanc.proxy.$el)
         }
       }
